@@ -31,5 +31,13 @@ public class CensusAnalyserTest {
         catch (CensusException c){
         }
     }
-
+    @Test
+    public void checkNumberOfEntriesFromStateCsvFile(){
+        try {
+            int expected = StateCSVReader.loadCSVFile(stateCsvPath);
+            Assertions.assertEquals(expected,12);
+        }
+        catch (CensusException c){
+        }
+    }
 }

@@ -12,23 +12,26 @@ import java.util.stream.StreamSupport;
 
 public class StateCSVReader {
     static CsvToBean<StateCSV> csvToBean = null;
-    public static int stateCSV(String pathName) throws CensusException{
+
+    static Iterator<StateCSV> iterator = null;
+
+    public static int loadCSVFile(String pathOfCSVfile) throws CensusException {
         try {
-            Reader reader = Files.newBufferedReader(Paths.get(pathName));
+            Reader reader = Files.newBufferedReader(Paths.get(pathOfCSVfile));
             CsvToBeanBuilder<StateCSV> csvToBeanBuilder = new CsvToBeanBuilder<>(reader);
             csvToBeanBuilder.withType(StateCSV.class);
             csvToBeanBuilder.withIgnoreEmptyLine(true);
-            csvToBean = new CsvToBean<>();
-
+            CsvToBean<StateCSV> csvToBean = csvToBeanBuilder.build();
+            Iterator<StateCSV> iterator = csvToBean.iterator();
+            int numOfEntries = 0;
+            while (iterator.hasNext()) {
+                numOfEntries++;
+                StateCSV data = iterator.next();
+            }
+            return numOfEntries;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new CensusException(e.getMessage(),
+                    CensusException.ExceptionType.CENSUS_FILE_PROBLEM);
         }
-        catch (IllegalStateException e){
-            throw new RuntimeException(e);
-        }
-        Iterator<StateCSV> iterator = csvToBean.iterator();
-        Iterable<StateCSV> iterable = () -> iterator;
-        int numOfEntries = (int) StreamSupport.stream(iterable.spliterator(),false).count();
-        return numOfEntries;
     }
 }
